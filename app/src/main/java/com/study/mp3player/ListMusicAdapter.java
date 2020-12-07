@@ -2,13 +2,19 @@ package com.study.mp3player;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.MediaMetadata;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
@@ -35,6 +41,9 @@ public class ListMusicAdapter extends RecyclerView.Adapter<ListMusicAdapter.View
         System.out.println(mMusicFile);
         holder.mArtist.setText(mMusicFile.getArtist());
         holder.mTitle.setText(mMusicFile.getTitle());
+        byte[] img = getPhoto(mMusicFile.getPath());
+        Glide.with(context).asBitmap().load(img).into(holder.mImageSong);
+
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -44,7 +53,13 @@ public class ListMusicAdapter extends RecyclerView.Adapter<ListMusicAdapter.View
             }
         });
     }
-
+    public byte [] getPhoto(String path){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(path);
+        byte[] art = retriever.getEmbeddedPicture();
+        retriever.release();
+        return art;
+    }
     @Override
     public int getItemCount() {
         return listMusic.size();
@@ -54,12 +69,14 @@ public class ListMusicAdapter extends RecyclerView.Adapter<ListMusicAdapter.View
 
         private TextView mTitle;
         private TextView mArtist;
+        private ImageView mImageSong;
         private ListMusicAdapter listMusicAdapter;
 
         public ViewHolder(View view,ListMusicAdapter listMusicAdapter) {
             super(view);
             mTitle = (TextView) view.findViewById(R.id.txtSongName);
             mArtist = (TextView) view.findViewById(R.id.txtArtist);
+            mImageSong = (ImageView) view.findViewById(R.id.imageSong);
             this.listMusicAdapter = listMusicAdapter;
         }
     }

@@ -3,6 +3,7 @@ package com.study.mp3player;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -20,7 +22,7 @@ import static com.study.mp3player.MainActivity.musicFiles;
 
 public class AudioPlayer extends AppCompatActivity {
     private TextView songName,artistName,durationPlay,durationTotal;
-    private ImageView nextBtn,preBtn,backBtn;
+    private ImageView nextBtn,preBtn,backBtn,imageView;
     private FloatingActionButton playPauseBtn;
     private SeekBar seekBar;
     private int position = -1;
@@ -72,6 +74,7 @@ public class AudioPlayer extends AppCompatActivity {
             artistName.setText(listSong.get(position).getArtist());
             playPauseBtn.setImageResource(R.drawable.ic_pause);
             uri = Uri.parse(listSong.get(position).getPath());
+            Glide.with(this).asBitmap().load(getPhoto(uri)).into(imageView);
             if (mediaPlayer!=null){
                 mediaPlayer.stop();
                 mediaPlayer.release();
@@ -116,6 +119,7 @@ public class AudioPlayer extends AppCompatActivity {
             mediaPlayer.release();
             position=((position-1) <0 ?(listSong.size() -1): (position-1));
             uri = Uri.parse(listSong.get(position).getPath());
+            Glide.with(this).asBitmap().load(getPhoto(uri)).into(imageView);
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             songName.setText(listSong.get(position).getTitle());
             artistName.setText(listSong.get(position).getArtist());
@@ -137,8 +141,9 @@ public class AudioPlayer extends AppCompatActivity {
         else{
             mediaPlayer.stop();
             mediaPlayer.release();
-            position=((position-1) % listSong.size());
+            position=((position-1) <0 ?(listSong.size() -1): (position-1));
             uri = Uri.parse(listSong.get(position).getPath());
+            Glide.with(this).asBitmap().load(getPhoto(uri)).into(imageView);
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             songName.setText(listSong.get(position).getTitle());
             artistName.setText(listSong.get(position).getArtist());
@@ -180,6 +185,7 @@ public class AudioPlayer extends AppCompatActivity {
             mediaPlayer.release();
             position=((position+1) % listSong.size());
             uri = Uri.parse(listSong.get(position).getPath());
+            Glide.with(this).asBitmap().load(getPhoto(uri)).into(imageView);
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             songName.setText(listSong.get(position).getTitle());
             artistName.setText(listSong.get(position).getArtist());
@@ -203,6 +209,7 @@ public class AudioPlayer extends AppCompatActivity {
             mediaPlayer.release();
             position=((position+1) % listSong.size());
             uri = Uri.parse(listSong.get(position).getPath());
+            Glide.with(this).asBitmap().load(getPhoto(uri)).into(imageView);
             mediaPlayer = MediaPlayer.create(getApplicationContext(),uri);
             songName.setText(listSong.get(position).getTitle());
             artistName.setText(listSong.get(position).getArtist());
@@ -241,6 +248,7 @@ public class AudioPlayer extends AppCompatActivity {
 
     private void playPauseBtnClicked() {
         if(mediaPlayer.isPlaying()){
+
             playPauseBtn.setImageResource(R.drawable.ic_play);
             mediaPlayer.pause();
             seekBar.setMax(mediaPlayer.getDuration()/1000);
@@ -281,7 +289,7 @@ public class AudioPlayer extends AppCompatActivity {
         backBtn = findViewById(R.id.back_btn);
         playPauseBtn = findViewById(R.id.play_pause_btn);
         seekBar = findViewById(R.id.seekBar);
-
+        imageView = findViewById(R.id.imageView);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -310,5 +318,12 @@ public class AudioPlayer extends AppCompatActivity {
             }
         });
 
+    }
+    public byte [] getPhoto(Uri path){
+        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        retriever.setDataSource(path.toString());
+        byte[] art = retriever.getEmbeddedPicture();
+        retriever.release();
+        return art;
     }
 }

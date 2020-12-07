@@ -52,7 +52,14 @@
         android:layout_width="match_parent"
         android:layout_height="350dp"
         android:layout_below="@id/top_btn"
-        android:background="@color/black"></RelativeLayout>
+        android:background="@color/black">
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:srcCompat="@drawable/ic_launcher_background" />
+    </RelativeLayout>
 
     <TextView
         android:id="@+id/SongName_txt"
